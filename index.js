@@ -2,9 +2,10 @@ const express = require('express');
 const querystring = require('querystring');
 const crypto = require('crypto');
 require("dotenv").config()
-
+const cors = require("cors")
 const app = express();
 const PORT = process.env.PORT || 8080;
+app.use(cors())
 // Set up API credentials
 const BBB_SERVER_URL = process.env.BBB_SERVER_URL;
 const BBB_SECRET_KEY = process.env.BBB_SECRET_KEY;
