@@ -1,6 +1,8 @@
 const express = require('express');
 const querystring = require('querystring');
 const crypto = require('crypto');
+const axios = require('axios');
+const xml2js = require('xml2js');
 require("dotenv").config()
 const cors = require("cors")
 const app = express();
@@ -73,23 +75,49 @@ const getJoinUrlUser = (meetingId) => {
 // Launch the meeting and embed it in your website
 const launchMeeting = async () => {
   const meetingURL = await createMeeting();
-  console.log(meetingURL);
+  // console.log(meetingURL);
   if (!meetingURL) {
     console.error('Failed to create BigBlueButton meeting');
     return;
   }
   const urlAdmin = getJoinUrlAdmin(meetingID)
   // const iframeHtmlAdmin = `<iframe src="${urlAdmin}" width="800" height="600" allowfullscreen></iframe>`;
-  console.log("Admin URL : ", urlAdmin);
+  // console.log("Admin URL : ", urlAdmin);
   const urlUser = getJoinUrlUser(meetingID)
   // const iframeHtmlUser = `<iframe src="${urlUser}" width="800" height="600" allowfullscreen></iframe>`;
-  console.log("Attendee URL : ", urlUser);
+  // console.log("Attendee URL : ", urlUser);
+
+  let responseA;
+  axios.get(urlAdmin)
+  .then((response) => {
+    const xml = response.data;
+    xml2js.parseString(xml, function (err, result) {
+      responseA = result.response;  
+    });
+  })
+  .catch((error) => {
+    console.error(error);
+  });
+
+  let responseU;
+  axios.get(urlUser)
+  .then((response) => {
+    const xml = response.data;
+    xml2js.parseString(xml, function (err, result) {
+      responseU = result.response;  
+    });
+  })
+  .catch((error) => {
+    console.error(error);
+  });
 
   app.get("/", (req, res) => {
     res.send({
       createMeeting : meetingURL,
       adminURL : urlAdmin,
-      userURL : urlUser
+      userURL : urlUser,
+      admin : responseA,
+      user : responseU
     })
   })
 }
