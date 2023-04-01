@@ -87,37 +87,11 @@ const launchMeeting = async () => {
   // const iframeHtmlUser = `<iframe src="${urlUser}" width="800" height="600" allowfullscreen></iframe>`;
   // console.log("Attendee URL : ", urlUser);
 
-  let responseA;
-  axios.get(urlAdmin)
-  .then((response) => {
-    const xml = response.data;
-    xml2js.parseString(xml, function (err, result) {
-      responseA = result.response;  
-    });
-  })
-  .catch((error) => {
-    console.error(error);
-  });
-
-  let responseU;
-  axios.get(urlUser)
-  .then((response) => {
-    const xml = response.data;
-    xml2js.parseString(xml, function (err, result) {
-      responseU = result.response;  
-    });
-  })
-  .catch((error) => {
-    console.error(error);
-  });
-
   app.get("/", (req, res) => {
     res.send({
       createMeeting : meetingURL,
       adminURL : urlAdmin,
       userURL : urlUser,
-      admin : responseA,
-      user : responseU
     })
   })
 }
